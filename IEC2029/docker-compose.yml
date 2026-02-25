@@ -35,13 +35,13 @@ services:
       DB_USER: postgres
       DB_PASSWORD: password
     ports:
-      - "8888:8888"   # for Jupyter (if using notebooks)
+      - "8888:8888"   # for Jupyter 
     networks:
       - backend
 
 networks:
   backend:
-    driver: bridge
+    driver: bridge # this allows python and postgres to talk to each other
 
 volumes:
-  db:
+  db: # this keeps data from disappearing when the container stops
