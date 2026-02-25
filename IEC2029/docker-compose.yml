@@ -1,42 +1,47 @@
-# Source - https://stackoverflow.com/a/75246287
-# Posted by e741af0d41bc74bf854041f1fbdbf, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-02-23, License - CC BY-SA 4.0
-
-#got sections of this code from stack overflow 
-# has a python and postgreSQL containers
+version: "3.9"
 
 services:
   db:
     container_name: postgres
-    image: postgres
+    image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
       POSTGRES_DB: bank
+      PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
     ports:
       - "5332:5432"
     networks:
-      - db
-    restart: always #what is the difference between this and unless-stopped
+      - backend
+    restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bank"]
+      interval: 10s
+      timeout: 5s
       retries: 5
 
   python:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: python-app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: bank
+      DB_USER: postgres
+      DB_PASSWORD: password
     ports:
-      - "5333:5432" #had to change this from 5332 because it gave me an error that the port was already being used by postgreSQL
+      - "8888:8888"   # for Jupyter (if using notebooks)
+    networks:
+      - backend
+
 networks:
-  db:
+  backend:
     driver: bridge
 
 volumes:
   db:
-
