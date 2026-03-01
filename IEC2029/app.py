@@ -2,4 +2,4 @@
 import time
 while True:
     print("Python container is running...")
-    time.sleep(5)
+    time.sleep(4)
