@@ -1,28 +1,28 @@
 version: "3.9"
 
 services:
-  db:
+  db: # this is the configuration for the database service
     container_name: postgres
-    image: postgres:16
+    image: postgres:16 # changed from "latest" to avoid any future issues when a newer version is released that may bring up compatibility issues 
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: bank
+      POSTGRES_DB: IEC2029_Database
       PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
     ports:
       - "5332:5432"
     networks:
-      - backend
+      - backend_network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d bank"]
+    healthcheck: # this gives confirmation that the database is ready before python tries to connect to it
+      test: ["CMD-SHELL", "pg_isready -U postgres -d IEC2029_Database"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  python:
+  python:  # this is the configuration for the python service
     build:
       context: .
       dockerfile: Dockerfile
@@ -37,10 +37,11 @@ services:
     ports:
       - "8888:8888"   # for Jupyter 
     networks:
-      - backend
+      - backend_network
+    restart: unless-stopped
 
 networks:
-  backend:
+  backend_network:
     driver: bridge # this allows python and postgres to talk to each other
 
 volumes:
