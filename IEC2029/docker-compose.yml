@@ -25,12 +25,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: python-app
+    container_name: python
     depends_on:
       - db
     environment:
       DB_HOST: db
-      DB_NAME: bank
+      DB_NAME: IEC2029_Database
       DB_USER: postgres
       DB_PASSWORD: password
     ports:
