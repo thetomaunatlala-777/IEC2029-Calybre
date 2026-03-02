@@ -4,7 +4,7 @@ WORKDIR /app
 
 #  ping to test connection between containers
 RUN apt-get update && \
-    apt-get install -y postgresql-client  iputils-ping && \
+    apt-get install -y postgresql-client iputils-ping && \
     apt-get clean
 
 
