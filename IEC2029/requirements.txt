@@ -2,3 +2,9 @@ sqlalchemy
 psycopg2-binary
 pandas
 jupyter
+ipython
+requests
+aiohttp
+ipython-sql
+openpyxl
+python-dotenv
