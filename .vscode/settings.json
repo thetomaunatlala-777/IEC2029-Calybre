@@ -1,0 +1,15 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5332,
+            "driver": "PostgreSQL",
+            "name": "IEC2029_Database",
+            "database": "IEC2029_Database",
+            "username": "postgres"
+        }
+    ]
+}
