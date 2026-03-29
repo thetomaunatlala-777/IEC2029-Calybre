@@ -2,15 +2,20 @@
 #Ingestion of Election results per election,
 #election type, province, municipality
 #and voting station, into the bronze layer
-
 import time
 import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 import glob
+from dotenv import load_dotenv, find_dotenv
 import os
 
-postgresql_url = 'postgresql://postgres:password@db:5432/IEC2029_Database'
+load_dotenv(find_dotenv(), override=True)
+
+postgresql_url = (
+    f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+    f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+)
 engine = create_engine(postgresql_url)
 
 # Wait until Postgres is ready
