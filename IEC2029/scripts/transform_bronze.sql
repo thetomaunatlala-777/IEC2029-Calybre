@@ -39,7 +39,9 @@ BEGIN
 END $$;
 
 ALTER TABLE bronze."2004_npe"
-    RENAME COLUMN "_voter_turnout" TO "voter_turnout";
+    RENAME COLUMN "_voter_turnout" TO "voter_turnout_percent";
+
+select * from bronze."2004_npe";
 
 
 -- -----------------------------------------------------------------------------
@@ -72,7 +74,9 @@ BEGIN
 END $$;
 
 ALTER TABLE bronze."2009_npe"
-    RENAME COLUMN "_voter_turnout" TO "voter_turnout";
+    RENAME COLUMN "_voter_turnout" TO "voter_turnout_percent";
+
+select * from bronze."2009_npe";
 
 
 -- -----------------------------------------------------------------------------
@@ -105,7 +109,9 @@ BEGIN
 END $$;
 
 ALTER TABLE bronze."2014_npe"
-    RENAME COLUMN "_voter_turnout" TO "voter_turnout";
+    RENAME COLUMN "_voter_turnout" TO "voter_turnout_percent";
+
+select * from bronze."2014_npe";
 
 
 -- -----------------------------------------------------------------------------
@@ -136,6 +142,14 @@ BEGIN
         END IF;
     END LOOP;
 END $$;
+
+ALTER TABLE bronze."2019_national"
+    RENAME COLUMN "spartname" TO "party_name";
+
+select * from bronze."2019_national";
+
+ALTER TABLE bronze."2019_national"
+    RENAME COLUMN "total_valid_votes" TO "total_votes_cast";
 
 
 -- -----------------------------------------------------------------------------
@@ -170,12 +184,19 @@ END $$;
 ALTER TABLE bronze."2019_provincial"
     RENAME COLUMN "spartyname" TO "party_name";
 
+select * from bronze."2019_provincial";
+
 -- Drop columns with no data
 ALTER TABLE bronze."2019_provincial"
     DROP COLUMN "generated_datetime:_30_jun_2020_13:19:48";
 
 ALTER TABLE bronze."2019_provincial"
     DROP COLUMN "unnamed:_10";
+
+ALTER TABLE bronze."2019_provincial"
+    RENAME COLUMN "total_valid_votes" TO "total_votes_cast";
+
+
 
 
 -- -----------------------------------------------------------------------------
@@ -212,6 +233,15 @@ ALTER TABLE bronze."2024_national"
 
 ALTER TABLE bronze."2024_national"
     DROP COLUMN "generated_datetime";
+
+ALTER TABLE bronze."2024_national"
+    RENAME COLUMN "ï»¿province" TO "province";
+
+
+ALTER TABLE bronze."2024_national"
+    RENAME COLUMN "total_valid_votes" TO "total_votes_cast";
+
+select * from bronze."2024_national";
 
 
 -- -----------------------------------------------------------------------------
@@ -253,6 +283,12 @@ ALTER TABLE bronze."2024_provincial"
     DROP COLUMN "generated_datetime";
 
 
+ALTER TABLE bronze."2024_provincial"
+    RENAME COLUMN "total_valid_votes" TO "total_votes_cast";
+
+select * from bronze."2024_provincial";
+
+
 -- =============================================================================
 -- SECTION 2: NULL VALUE CLEANUP
 -- =============================================================================
@@ -273,10 +309,7 @@ WHERE "registered_population" IS NULL;
 
 -- 2019_national: drop rows with no party name
 DELETE FROM bronze."2019_national"
-WHERE "spartname" IS NULL;
-
-ALTER TABLE bronze."2019_national"
-    RENAME COLUMN "spartname" TO "party_name";
+WHERE "party_name" IS NULL;
 
 -- 2019_national: drop generated_datetime column (no data)
 ALTER TABLE bronze."2019_national"
@@ -293,11 +326,9 @@ ALTER TABLE bronze."2019_national"
 
 -- Strip % and cast voter_turnout to numeric
 ALTER TABLE bronze."2004_npe"
-    ALTER COLUMN "voter_turnout" TYPE DOUBLE PRECISION
-    USING REPLACE("voter_turnout", '%', '')::DOUBLE PRECISION;
+    ALTER COLUMN "voter_turnout_percent" TYPE DOUBLE PRECISION
+    USING REPLACE("voter_turnout_percent", '%', '')::DOUBLE PRECISION;
 
-ALTER TABLE bronze."2004_npe"
-    RENAME COLUMN "voter_turnout"      TO "voter_turnout_percent";
 
 ALTER TABLE bronze."2004_npe"
     RENAME COLUMN "registered_voters"  TO "registered_population";
@@ -317,6 +348,8 @@ ALTER TABLE bronze."2004_npe"
 ALTER TABLE bronze."2004_npe"
     ALTER COLUMN "total_votes_cast"      TYPE INTEGER USING "total_votes_cast"::INTEGER;
 
+select * from bronze."2004_npe";
+
 
 -- -----------------------------------------------------------------------------
 -- 3.2  2009_npe
@@ -331,8 +364,8 @@ ALTER TABLE bronze."2009_npe"
     USING REPLACE("registered_population", ',', '')::INTEGER;
 
 ALTER TABLE bronze."2009_npe"
-    ALTER COLUMN "voter_turnout" TYPE DOUBLE PRECISION
-    USING REPLACE("voter_turnout", '%', '')::DOUBLE PRECISION;
+    ALTER COLUMN "voter_turnout_percent" TYPE DOUBLE PRECISION
+    USING REPLACE("voter_turnout_percent", '%', '')::DOUBLE PRECISION;
 
 ALTER TABLE bronze."2009_npe"
     ALTER COLUMN "valid_votes"        TYPE INTEGER USING REPLACE("valid_votes",        ',', '')::INTEGER;
@@ -356,6 +389,9 @@ ALTER TABLE bronze."2009_npe"
     ALTER COLUMN "spoilt_votes"       TYPE INTEGER USING "spoilt_votes"::INTEGER;
 
 
+select * from bronze."2009_npe";
+
+
 -- -----------------------------------------------------------------------------
 -- 3.3  2014_npe
 -- -----------------------------------------------------------------------------
@@ -365,9 +401,6 @@ ALTER TABLE bronze."2014_npe"
 
 ALTER TABLE bronze."2014_npe"
     ALTER COLUMN "voting_district"  TYPE INTEGER USING "voting_district"::INTEGER;
-
-ALTER TABLE bronze."2014_npe"
-    ALTER COLUMN "registered_voters" TYPE INTEGER USING "registered_voters"::INTEGER;
 
 ALTER TABLE bronze."2014_npe"
     RENAME COLUMN "registered_voters" TO "registered_population";
@@ -387,12 +420,13 @@ ALTER TABLE bronze."2014_npe"
 ALTER TABLE bronze."2014_npe"
     ALTER COLUMN "special_votes"      TYPE INTEGER USING "special_votes"::INTEGER;
 
+select * from bronze."2014_npe";
+
 -- Convert decimal ratio → percentage (e.g. 0.65 → 65.00)
 UPDATE bronze."2014_npe"
-SET "voter_turnout" = ROUND(("voter_turnout" * 100)::NUMERIC, 2);
+SET "voter_turnout_percent" = ROUND(("voter_turnout_percent" * 100)::NUMERIC, 2);
 
-ALTER TABLE bronze."2014_npe"
-    RENAME COLUMN "voter_turnout" TO "voter_turnout_percent";
+select * from bronze."2014_npe";
 
 
 -- -----------------------------------------------------------------------------
@@ -403,12 +437,6 @@ ALTER TABLE bronze."2019_national"
     RENAME COLUMN "vd_number"          TO "voting_district";
 
 ALTER TABLE bronze."2019_national"
-    RENAME COLUMN "total_valid_votes"  TO "valid_votes";
-
-ALTER TABLE bronze."2019_national"
-    RENAME COLUMN "party_votes"        TO "total_votes_cast";
-
-ALTER TABLE bronze."2019_national"
     ALTER COLUMN "voting_district"      TYPE INTEGER USING "voting_district"::INTEGER;
 
 ALTER TABLE bronze."2019_national"
@@ -417,25 +445,23 @@ ALTER TABLE bronze."2019_national"
 ALTER TABLE bronze."2019_national"
     ALTER COLUMN "spoilt_votes"         TYPE INTEGER USING "spoilt_votes"::INTEGER;
 
-ALTER TABLE bronze."2019_national"
-    ALTER COLUMN "valid_votes"          TYPE INTEGER USING "valid_votes"::INTEGER;
+---ALTER TABLE bronze."2019_national"
+    ---ALTER COLUMN "valid_votes"          TYPE INTEGER USING "valid_votes"::INTEGER;
 
 ALTER TABLE bronze."2019_national"
     ALTER COLUMN "total_votes_cast"     TYPE INTEGER USING "total_votes_cast"::INTEGER;
 
+select * from bronze."2019_national";
 
 -- -----------------------------------------------------------------------------
 -- 3.5  2019_provincial
 -- -----------------------------------------------------------------------------
 
+select * from bronze."2019_provincial";
+
 ALTER TABLE bronze."2019_provincial"
     RENAME COLUMN "vd_number"         TO "voting_district";
 
-ALTER TABLE bronze."2019_provincial"
-    RENAME COLUMN "total_valid_votes" TO "valid_votes";
-
-ALTER TABLE bronze."2019_provincial"
-    RENAME COLUMN "party_votes"       TO "total_votes_cast";
 
 ALTER TABLE bronze."2019_provincial"
     ALTER COLUMN "voting_district" TYPE INTEGER USING "voting_district"::INTEGER;
@@ -457,8 +483,8 @@ ALTER TABLE bronze."2019_provincial"
         ELSE 0
     END;
 
-ALTER TABLE bronze."2019_provincial"
-    ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
+---ALTER TABLE bronze."2019_provincial"
+    ---ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
 
 ALTER TABLE bronze."2019_provincial"
     ALTER COLUMN "total_votes_cast" TYPE INTEGER
@@ -468,22 +494,28 @@ ALTER TABLE bronze."2019_provincial"
         ELSE 0
     END;
 
+ALTER TABLE bronze."2019_provincial"
+    ALTER COLUMN "party_votes" TYPE INTEGER
+    USING CASE
+        WHEN "party_votes" ~ '^[0-9,]+$'
+        THEN REPLACE("party_votes", ',', '')::INTEGER
+        ELSE 0
+    END;
+
 
 -- -----------------------------------------------------------------------------
 -- 3.6  2024_national
 -- -----------------------------------------------------------------------------
 
-ALTER TABLE bronze."2024_national"
-    RENAME COLUMN "ï»¿province"       TO "province";
+
+select * from bronze."2024_national";
 
 ALTER TABLE bronze."2024_national"
     RENAME COLUMN "vd_number"          TO "voting_district";
 
-ALTER TABLE bronze."2024_national"
-    RENAME COLUMN "total_valid_votes"  TO "valid_votes";
+---ALTER TABLE bronze."2024_national"
+    ---RENAME COLUMN "total_valid_votes"  TO "valid_votes";
 
-ALTER TABLE bronze."2024_national"
-    RENAME COLUMN "party_votes"        TO "total_votes_cast";
 
 ALTER TABLE bronze."2024_national"
     ALTER COLUMN "voting_district" TYPE INTEGER USING "voting_district"::INTEGER;
@@ -504,8 +536,8 @@ ALTER TABLE bronze."2024_national"
         ELSE 0
     END;
 
-ALTER TABLE bronze."2024_national"
-    ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
+---ALTER TABLE bronze."2024_national"
+    ---ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
 
 ALTER TABLE bronze."2024_national"
     ALTER COLUMN "total_votes_cast" TYPE INTEGER
@@ -520,14 +552,15 @@ ALTER TABLE bronze."2024_national"
 -- 3.7  2024_provincial
 -- -----------------------------------------------------------------------------
 
+select * from bronze."2024_provincial";
+
 ALTER TABLE bronze."2024_provincial"
     RENAME COLUMN "vd_number"         TO "voting_district";
 
-ALTER TABLE bronze."2024_provincial"
-    RENAME COLUMN "total_valid_votes" TO "valid_votes";
+---ALTER TABLE bronze."2024_provincial"
+    ---RENAME COLUMN "total_valid_votes" TO "valid_votes";
 
-ALTER TABLE bronze."2024_provincial"
-    RENAME COLUMN "party_votes"       TO "total_votes_cast";
+
 
 ALTER TABLE bronze."2024_provincial"
     ALTER COLUMN "voting_district" TYPE INTEGER USING "voting_district"::INTEGER;
@@ -548,8 +581,8 @@ ALTER TABLE bronze."2024_provincial"
         ELSE 0
     END;
 
-ALTER TABLE bronze."2024_provincial"
-    ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
+---ALTER TABLE bronze."2024_provincial"
+    ---ALTER COLUMN "valid_votes"      TYPE INTEGER USING "valid_votes"::INTEGER;
 
 ALTER TABLE bronze."2024_provincial"
     ALTER COLUMN "total_votes_cast" TYPE INTEGER
@@ -691,6 +724,11 @@ UPDATE bronze."2024_provincial" SET "election_type" = 'PROVINCIAL';
 -- 6.1  silver.election_results
 --      Unified view across all election years and types
 -- -----------------------------------------------------------------------------
+select * from bronze."2009_npe";
+select * from bronze."2004_npe";
+select * from bronze."2014_npe";
+select * from bronze."2019_national";
+select * from bronze."2019_provincial";  
 
 CREATE TABLE silver."election_results" AS
 
@@ -802,9 +840,31 @@ FROM bronze."2024_provincial";
 ALTER TABLE silver."election_results"
     ADD COLUMN IF NOT EXISTS ward INTEGER;
 
-UPDATE silver."election_results" e
-SET ward = NULLIF(v.ward, '')::INTEGER
-FROM bronze."voting_stations" v
+select * from silver.election_results;
+
+
+
+select * from bronze."voting_stations";
+
+
+--extract json api response into columns
+SELECT
+    vs.*,
+    vs.api_response ->> 'Ward'       AS ward,
+    vs.api_response ->> 'VDNumber'    AS voting_district,
+    vs.api_response ->> 'Province'   AS province,
+    vs.api_response -> 'VotingStation' -> 0 ->> 'Latitude'  AS latitude,
+    vs.api_response -> 'VotingStation' -> 0 ->> 'Longitude'  AS longitude
+FROM bronze.voting_stations vs;
+
+
+UPDATE silver.election_results e
+SET ward = CASE 
+    WHEN (v.api_response ->> 'Ward') ~ '^\d+$' 
+    THEN (v.api_response ->> 'Ward')::INTEGER
+    ELSE NULL
+END
+FROM bronze.voting_stations v
 WHERE e.voting_district = v.vd_number;
 
 
@@ -872,3 +932,13 @@ ALTER TABLE silver."population"
 -- Remove rows where ward could not be parsed
 DELETE FROM silver.population
 WHERE "ward_number" IS NULL;
+
+
+select * from silver."election_results";
+
+
+--make all provinces uppercase
+SELECT UPPER(province) AS province
+FROM silver.election_results;
+
+select count(*) from silver."election_results" where voter_turnout_percent<=100;

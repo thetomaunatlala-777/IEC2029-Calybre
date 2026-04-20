@@ -33,6 +33,12 @@ else:
 with engine.begin() as connection:  
     
     connection.execute(text("CREATE SCHEMA IF NOT EXISTS bronze"))
+    connection.execute(text("""
+    CREATE TABLE bronze.voting_stations (
+        vd_number INT PRIMARY KEY,
+        api_response JSONB NOT NULL
+    )
+"""))
 
     for vd in vd_nums:
         for attempt in range(max_retries):
