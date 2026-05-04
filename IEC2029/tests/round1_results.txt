@@ -1,0 +1,735 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0 -- /usr/local/bin/python3.11
+cachedir: .pytest_cache
+rootdir: /app
+plugins: anyio-4.13.0, cov-7.1.0
+collecting ... collected 39 items
+
+tests/test_bronze.py::test_bronze_row_counts 
+  2004_npe.csv: 612135 rows (encoding: utf-8-sig)
+
+  2009_npe.csv: failed with utf-8-sig — 'utf-8' codec can't decode byte 0xc2 in position 22256: invalid continuation byte
+
+  2009_npe.csv: 854911 rows (encoding: latin-1)
+
+  2014_npe.csv: failed with utf-8-sig — 'utf-8' codec can't decode byte 0xc2 in position 256626: invalid continuation byte
+
+  2014_npe.csv: 1064463 rows (encoding: latin-1)
+
+  2019_National.csv: failed with utf-8-sig — 'utf-8' codec can't decode byte 0x99 in position 107804: invalid start byte
+
+  2019_National.csv: 1099566 rows (encoding: latin-1)
+
+  2019_Provincial.csv: failed with utf-8-sig — 'utf-8' codec can't decode byte 0x90 in position 51651: invalid start byte
+
+  2019_Provincial.csv: 694414 rows (encoding: latin-1)
+
+  2024_National.csv: 1211184 rows (encoding: utf-8-sig)
+
+  2024_Provincial.csv: 734251 rows (encoding: utf-8-sig)
+
+  MDB_Wards_2020.csv: 4468 rows (encoding: utf-8-sig)
+
+============================================================
+TC-B01 ROW COUNTS — 8 checked
+============================================================
+
+  PASSED (5):
+    PASS  bronze.2014_npe: 1064463 rows — exact match
+    PASS  bronze.2019_provincial: 694414 rows — exact match
+    PASS  bronze.2024_national: 1211184 rows — exact match
+    PASS  bronze.2024_provincial: 734251 rows — exact match
+    PASS  bronze.mdb_wards_2020: 4468 rows — exact match
+
+  WARNINGS — within tolerance (3):
+    WARN  bronze.2004_npe: CSV=612135, DB=611946, lost 189 rows (0.03%) — within 1%
+    WARN  bronze.2009_npe: CSV=854911, DB=846629, lost 8282 rows (0.97%) — within 1%
+    WARN  bronze.2019_national: CSV=1099566, DB=1099440, lost 126 rows (0.01%) — within 1%
+
+  Summary: 5 passed, 3 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_bronze.py::test_bronze_expected_columns 
+============================================================
+TC-B03 EXPECTED COLUMNS — 1 checked
+============================================================
+
+  FAILED (1):
+    FAIL  bronze.2024_provincial: missing columns ['Province', 'Municipality', 'VD_Number', 'VS_Name', 'Registered_Population', 'Spoilt_Votes', 'Total_Valid_Votes', 'sPartyName', 'Party_Votes', 'Generated_Datetime']
+
+  Summary: 0 passed, 0 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_bronze.py::test_bronze_tables_not_empty 
+============================================================
+TC-B04 TABLES NOT EMPTY — 8 checked
+============================================================
+
+  PASSED (8):
+    PASS  bronze.2004_npe: 611946 rows
+    PASS  bronze.2009_npe: 846629 rows
+    PASS  bronze.2014_npe: 1064463 rows
+    PASS  bronze.2019_national: 1099440 rows
+    PASS  bronze.2019_provincial: 694414 rows
+    PASS  bronze.2024_national: 1211184 rows
+    PASS  bronze.2024_provincial: 734251 rows
+    PASS  bronze.mdb_wards_2020: 4468 rows
+
+  Summary: 8 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_bronze.py::test_bronze_load_timestamp 
+============================================================
+TC-B05 LOAD TIMESTAMP — 8 checked
+============================================================
+
+  WARNINGS — within tolerance (8):
+    WARN  bronze.2004_npe: no loaded_at column — skipped
+    WARN  bronze.2009_npe: no loaded_at column — skipped
+    WARN  bronze.2014_npe: no loaded_at column — skipped
+    WARN  bronze.2019_national: no loaded_at column — skipped
+    WARN  bronze.2019_provincial: no loaded_at column — skipped
+    WARN  bronze.2024_national: no loaded_at column — skipped
+    WARN  bronze.2024_provincial: no loaded_at column — skipped
+    WARN  bronze.mdb_wards_2020: no loaded_at column — skipped
+
+  Summary: 0 passed, 8 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_tables_not_empty 
+============================================================
+TC-G01 GOLD TABLES NOT EMPTY — 5 checked
+============================================================
+
+  PASSED (5):
+    PASS  gold.vote: 3675297 rows
+    PASS  gold.location: 23292 rows
+    PASS  gold.party: 200 rows
+    PASS  gold.date: 10 rows
+    PASS  gold.demographic: 4468 rows
+
+  Summary: 5 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_vote_reconciles_to_silver 
+============================================================
+TC-G02 GOLD VOTE RECONCILES TO SILVER — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.vote: 3675297 rows (silver scope=6262327)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_all_9_provinces 
+============================================================
+TC-G03 ALL 9 PROVINCES IN GOLD — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.location: all 9 provinces present
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_no_negative_votes 
+============================================================
+TC-G04 NO NEGATIVE VALUES IN GOLD — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.vote: no negative values
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_turnout_pct_range 
+============================================================
+TC-G05 TURNOUT PCT RANGE IN GOLD — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.vote: all turnout values between 0-100
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_valid_coordinates 
+============================================================
+TC-G06 VALID SA COORDINATES — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.location: all non-null coordinates within SA bounds
+
+  FAILED (1):
+    FAIL  gold.location: 23292 rows (100.0%) with NULL coordinates — exceeds 5%
+
+  Summary: 1 passed, 0 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_gold.py::test_gold_demographic_ward_join 
+============================================================
+TC-G07 DEMOGRAPHIC WARD JOIN — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.location: all ward_numbers found in gold.demographic
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_population_positive 
+============================================================
+TC-G08 POPULATION VALUES POSITIVE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.demographic: all total_age_population values positive
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_referential_integrity 
+============================================================
+TC-G09 REFERENTIAL INTEGRITY — 3 checked
+============================================================
+
+  PASSED (3):
+    PASS  gold.vote.location_id: all FKs resolve to gold.location
+    PASS  gold.vote.party_id: all FKs resolve to gold.party
+    PASS  gold.vote.date_id: all FKs resolve to gold.date
+
+  Summary: 3 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_gold.py::test_gold_no_duplicate_parties 
+============================================================
+TC-G10 NO DUPLICATE PARTIES — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.party: no duplicate party names
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_performance_province_summary_query 
+============================================================
+TC-N01 PROVINCE SUMMARY QUERY PERFORMANCE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Province summary query: 0.59s (SLA: 5s)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_performance_ward_level_query 
+============================================================
+TC-N02 WARD LEVEL QUERY PERFORMANCE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Ward level query: 0.66s (SLA: 10s)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_performance_gold_join_query 
+============================================================
+TC-N03 GOLD JOIN QUERY PERFORMANCE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Gold join query: 0.01s (SLA: 10s)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_performance_full_election_scan 
+============================================================
+TC-N04 FULL ELECTION SCAN PERFORMANCE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Full election scan: 1.11s, 10 year groups (SLA: 15s)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_reproducibility_required_files_exist 
+============================================================
+TC-N06 REPRODUCIBILITY FILES EXIST — 3 checked
+============================================================
+
+  PASSED (3):
+    PASS  /app/notebooks exists
+    PASS  /app/requirements.txt exists
+    PASS  /app/docker-compose.yml exists
+
+  Summary: 3 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_performance.py::test_reproducibility_requirements_complete 
+============================================================
+TC-N07 REQUIREMENTS COMPLETE — 5 checked
+============================================================
+
+  PASSED (5):
+    PASS  pandas in requirements.txt
+    PASS  psycopg2 in requirements.txt
+    PASS  sqlalchemy in requirements.txt
+    PASS  pytest in requirements.txt
+    PASS  python-dotenv in requirements.txt
+
+  Summary: 5 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_bronze_ingest_election 
+============================================================
+TC-F01 BRONZE ELECTION INGESTION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  bronze.2024_provincial populated: 734251 rows
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_bronze_ingest_api 
+============================================================
+TC-F02 BRONZE API INGESTION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  bronze.voting_stations populated: 23946 rows
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_silver_transform 
+============================================================
+TC-F03 SILVER TRANSFORMATION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  silver.election_results populated: 6262327 rows
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_gold_transform 
+============================================================
+TC-F04 GOLD TRANSFORMATION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  gold.2024_npe populated: 3675297 rows
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_negative_missing_file 
+============================================================
+TC-F04 NEGATIVE TEST MISSING FILE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Missing file correctly detected — pipeline would skip gracefully
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_negative_malformed_csv 
+============================================================
+TC-F05 NEGATIVE TEST MALFORMED CSV — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Malformed CSV handled gracefully — 1 valid rows read
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_negative_empty_csv 
+============================================================
+TC-F06 NEGATIVE TEST EMPTY CSV — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  Empty CSV handled gracefully — 0 rows, no crash
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_sequence_bronze_before_silver_before_gold 
+============================================================
+TC-F07 PIPELINE SEQUENCE — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  All layers populated — Bronze=734251, Silver=6262327, Gold=3675297
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_pipelines.py::test_pipeline_logging_exists 
+============================================================
+TC-F10 LOGGING EXISTS — 1 checked
+============================================================
+
+  WARNINGS — within tolerance (1):
+    WARN  No dedicated log folder found — verify print logging in notebooks
+
+  Summary: 0 passed, 1 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_no_duplicates 
+============================================================
+TC-S01 NO DUPLICATES — 1 checked
+============================================================
+
+  FAILED (1):
+    FAIL  silver.election_results: 6032 duplicate combinations found
+
+  Summary: 0 passed, 0 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_silver.py::test_silver_no_nulls_critical_fields 
+============================================================
+TC-S02 NO NULLS IN CRITICAL FIELDS — 7 checked
+============================================================
+
+  PASSED (6):
+    PASS  silver.election_results.province: no NULLs
+    PASS  silver.election_results.voting_district: no NULLs
+    PASS  silver.election_results.year: no NULLs
+    PASS  silver.election_results.party_votes: no NULLs
+    PASS  silver.population.ward_number: no NULLs
+    PASS  silver.population.total_age_population: no NULLs
+
+  WARNINGS — within tolerance (1):
+    WARN  silver.election_results.party_name: 127 NULLs — source data issue, within 200 row threshold
+
+  Summary: 6 passed, 1 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_valid_provinces 
+============================================================
+TC-S03 VALID PROVINCE VALUES — 1 checked
+============================================================
+
+  WARNINGS — within tolerance (1):
+    WARN  silver.election_results: overseas vote records found: {'Out of Country Voting', 'OUT OF COUNTRY', 'Out of Country'} — expected, not an error
+
+  FAILED (1):
+    FAIL  silver.election_results: invalid province values after normalisation: {'Kwazulu-Natal'}
+
+  Summary: 0 passed, 1 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_silver.py::test_silver_all_9_provinces 
+============================================================
+TC-S04 ALL 9 PROVINCES PRESENT — 1 checked
+============================================================
+
+  FAILED (1):
+    FAIL  silver.election_results: missing provinces: {'KwaZulu-Natal'}
+
+  Summary: 0 passed, 0 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_silver.py::test_silver_source_to_target_reconciliation 
+============================================================
+TC-S05 SOURCE TO TARGET RECONCILIATION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  silver.election_results: 6262327 rows, bronze=6262327, diff=0 (0.00%)
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_no_negative_votes 
+============================================================
+TC-S06 NO NEGATIVE VOTES — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  silver.election_results: no negative party_votes
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_turnout_pct_range 
+============================================================
+TC-S07 TURNOUT PCT RANGE — 1 checked
+============================================================
+
+  WARNINGS — within tolerance (1):
+    WARN  silver.election_results: 729 NULL turnout values — expected for 2019/2024 rows
+
+  FAILED (1):
+    FAIL  silver.election_results: 2569205 rows with turnout out of range
+
+  Summary: 0 passed, 1 warned, 1 failed
+============================================================
+
+FAILED
+tests/test_silver.py::test_silver_tables_not_empty 
+============================================================
+TC-S08 SILVER TABLES NOT EMPTY — 2 checked
+============================================================
+
+  PASSED (2):
+    PASS  silver.election_results: 6262327 rows
+    PASS  silver.population: 4468 rows
+
+  Summary: 2 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_no_negative_population 
+============================================================
+TC-S09 NO NEGATIVE POPULATION — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  silver.population: no negative total_age_population values
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+tests/test_silver.py::test_silver_valid_election_years 
+============================================================
+TC-S10 VALID ELECTION YEARS — 1 checked
+============================================================
+
+  PASSED (1):
+    PASS  silver.election_results: all year values valid: [2004, 2009, 2014, 2019, 2024]
+
+  Summary: 1 passed, 0 warned, 0 failed
+============================================================
+
+PASSED
+
+=================================== FAILURES ===================================
+_________________________ test_bronze_expected_columns _________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_bronze_expected_columns(db_conn):
+        errors, warnings, passed = [], [], []
+    
+        for full_table, expected_cols in EXPECTED_COLUMNS.items():
+            schema, table = full_table.split(".")
+            with db_conn.cursor() as cur:
+                cur.execute("""
+                    SELECT column_name FROM information_schema.columns
+                    WHERE table_schema = %s AND table_name = %s
+                """, (schema, table))
+                actual = {row[0].strip("\ufeff") for row in cur.fetchall()}
+    
+            missing = [c for c in expected_cols if c not in actual]
+            if missing:
+                errors.append(f"FAIL  {full_table}: missing columns {missing}")
+            else:
+                passed.append(f"PASS  {full_table}: all {len(expected_cols)} columns present")
+    
+        print_summary("TC-B03 EXPECTED COLUMNS", passed, warnings, errors, len(EXPECTED_COLUMNS))
+>       assert not errors, "Missing columns:\n" + "\n".join(errors)
+E       AssertionError: Missing columns:
+E         FAIL  bronze.2024_provincial: missing columns ['Province', 'Municipality', 'VD_Number', 'VS_Name', 'Registered_Population', 'Spoilt_Votes', 'Total_Valid_Votes', 'sPartyName', 'Party_Votes', 'Generated_Datetime']
+E       assert not ["FAIL  bronze.2024_provincial: missing columns ['Province', 'Municipality', 'VD_Number', 'VS_Name', 'Registered_Population', 'Spoilt_Votes', 'Total_Valid_Votes', 'sPartyName', 'Party_Votes', 'Generated_Datetime']"]
+
+tests/test_bronze.py:70: AssertionError
+_________________________ test_gold_valid_coordinates __________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_gold_valid_coordinates(db_conn):
+        errors, warnings, passed = [], [], []
+        with db_conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM gold.location
+                WHERE station_latitude IS NULL OR station_longitude IS NULL
+            """)
+            nulls = cur.fetchone()[0]
+        with db_conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM gold.location
+                WHERE station_latitude IS NOT NULL
+                AND (station_latitude NOT BETWEEN -35 AND -22
+                OR station_longitude NOT BETWEEN 16 AND 33)
+            """)
+            invalid = cur.fetchone()[0]
+        total = db_count(db_conn, "gold", "location")
+        null_pct = nulls / total if total > 0 else 0
+        if null_pct > 0.05:
+            errors.append(f"FAIL  gold.location: {nulls} rows ({null_pct:.1%}) with NULL coordinates — exceeds 5%")
+        else:
+            warnings.append(f"WARN  gold.location: {nulls} rows with NULL coordinates ({null_pct:.1%}) — within tolerance")
+            passed.append(f"PASS  gold.location: coordinate NULL rate acceptable")
+        if invalid == 0:
+            passed.append("PASS  gold.location: all non-null coordinates within SA bounds")
+        else:
+            errors.append(f"FAIL  gold.location: {invalid} coordinates outside SA bounds")
+        print_summary("TC-G06 VALID SA COORDINATES", passed, warnings, errors, 1)
+>       assert not errors, "\n".join(errors)
+E       AssertionError: FAIL  gold.location: 23292 rows (100.0%) with NULL coordinates — exceeds 5%
+E       assert not ['FAIL  gold.location: 23292 rows (100.0%) with NULL coordinates — exceeds 5%']
+
+tests/test_gold.py:114: AssertionError
+__________________________ test_silver_no_duplicates ___________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_silver_no_duplicates(db_conn):
+        errors, warnings, passed = [], [], []
+        with db_conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM (
+                    SELECT province, voting_district, party_name, year, election_type, COUNT(*)
+                    FROM silver.election_results
+                    GROUP BY province, voting_district, party_name, year, election_type
+                    HAVING COUNT(*) > 1
+                ) dupes
+            """)
+            dupes = cur.fetchone()[0]
+        if dupes == 0:
+            passed.append("PASS  silver.election_results: zero duplicate rows")
+        else:
+            errors.append(f"FAIL  silver.election_results: {dupes} duplicate combinations found")
+        print_summary("TC-S01 NO DUPLICATES", passed, warnings, errors, 1)
+>       assert not errors, "\n".join(errors)
+E       AssertionError: FAIL  silver.election_results: 6032 duplicate combinations found
+E       assert not ['FAIL  silver.election_results: 6032 duplicate combinations found']
+
+tests/test_silver.py:28: AssertionError
+_________________________ test_silver_valid_provinces __________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_silver_valid_provinces(db_conn):
+        errors, warnings, passed = [], [], []
+        with db_conn.cursor() as cur:
+            cur.execute("SELECT DISTINCT province FROM silver.election_results WHERE province IS NOT NULL")
+            actual = {row[0] for row in cur.fetchall()}
+    
+        # Normalise to title case and exclude overseas votes
+        overseas = {"Out of Country", "Out of Country Voting", "OUT OF COUNTRY"}
+        actual_normalised = {v.title() for v in actual if v not in overseas}
+        invalid = actual_normalised - VALID_PROVINCES
+    
+        overseas_found = actual & overseas
+        if overseas_found:
+            warnings.append(f"WARN  silver.election_results: overseas vote records found: {overseas_found} — expected, not an error")
+    
+        if invalid:
+            errors.append(f"FAIL  silver.election_results: invalid province values after normalisation: {invalid}")
+        else:
+            passed.append(f"PASS  silver.election_results: all province values valid (after case normalisation)")
+    
+        print_summary("TC-S03 VALID PROVINCE VALUES", passed, warnings, errors, 1)
+>       assert not errors, "\n".join(errors)
+E       AssertionError: FAIL  silver.election_results: invalid province values after normalisation: {'Kwazulu-Natal'}
+E       assert not ["FAIL  silver.election_results: invalid province values after normalisation: {'Kwazulu-Natal'}"]
+
+tests/test_silver.py:91: AssertionError
+_________________________ test_silver_all_9_provinces __________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_silver_all_9_provinces(db_conn):
+        errors, warnings, passed = [], [], []
+        with db_conn.cursor() as cur:
+            cur.execute("SELECT DISTINCT province FROM silver.election_results WHERE province IS NOT NULL")
+            actual = {row[0].title() for row in cur.fetchall()}
+        missing = VALID_PROVINCES - actual
+        if missing:
+            errors.append(f"FAIL  silver.election_results: missing provinces: {missing}")
+        else:
+            passed.append("PASS  silver.election_results: all 9 provinces present")
+        print_summary("TC-S04 ALL 9 PROVINCES PRESENT", passed, warnings, errors, 1)
+>       assert not errors, "\n".join(errors)
+E       AssertionError: FAIL  silver.election_results: missing provinces: {'KwaZulu-Natal'}
+E       assert not ["FAIL  silver.election_results: missing provinces: {'KwaZulu-Natal'}"]
+
+tests/test_silver.py:105: AssertionError
+________________________ test_silver_turnout_pct_range _________________________
+
+db_conn = <connection object at 0x7abe2d36a200; dsn: 'user=postgres password=xxx dbname=IEC2029_Database host=postgres port=5432', closed: 0>
+
+    def test_silver_turnout_pct_range(db_conn):
+        errors, warnings, passed = [], [], []
+        with db_conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM silver.election_results
+                WHERE voter_turnout_percent IS NOT NULL
+                AND (voter_turnout_percent < 0 OR voter_turnout_percent > 100)
+            """)
+            out_of_range = cur.fetchone()[0]
+        with db_conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM silver.election_results
+                WHERE voter_turnout_percent IS NULL
+            """)
+            nulls = cur.fetchone()[0]
+        if nulls > 0:
+            warnings.append(f"WARN  silver.election_results: {nulls} NULL turnout values — expected for 2019/2024 rows")
+        if out_of_range == 0:
+            passed.append("PASS  silver.election_results: all non-null turnout values between 0-100")
+        else:
+            errors.append(f"FAIL  silver.election_results: {out_of_range} rows with turnout out of range")
+        print_summary("TC-S07 TURNOUT PCT RANGE", passed, warnings, errors, 1)
+>       assert not errors, "\n".join(errors)
+E       AssertionError: FAIL  silver.election_results: 2569205 rows with turnout out of range
+E       assert not ['FAIL  silver.election_results: 2569205 rows with turnout out of range']
+
+tests/test_silver.py:165: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_bronze.py::test_bronze_expected_columns - AssertionError: M...
+FAILED tests/test_gold.py::test_gold_valid_coordinates - AssertionError: FAIL...
+FAILED tests/test_silver.py::test_silver_no_duplicates - AssertionError: FAIL...
+FAILED tests/test_silver.py::test_silver_valid_provinces - AssertionError: FA...
+FAILED tests/test_silver.py::test_silver_all_9_provinces - AssertionError: FA...
+FAILED tests/test_silver.py::test_silver_turnout_pct_range - AssertionError: ...
+=================== 6 failed, 33 passed in 74.87s (0:01:14) ====================

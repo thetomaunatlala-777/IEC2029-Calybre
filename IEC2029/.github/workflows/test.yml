@@ -1,0 +1,101 @@
+name: IEC Pipeline Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: IEC2029_Database
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # ---------------------------
+      # Install PostgreSQL client
+      # ---------------------------
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      # ---------------------------
+      # Create schemas
+      # ---------------------------
+      - name: Create schemas
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U postgres -d IEC2029_Database -c "CREATE SCHEMA IF NOT EXISTS bronze;"
+          psql -h localhost -U postgres -d IEC2029_Database -c "CREATE SCHEMA IF NOT EXISTS silver;"
+          psql -h localhost -U postgres -d IEC2029_Database -c "CREATE SCHEMA IF NOT EXISTS gold;"
+
+      # ---------------------------
+      # Run Bronze Layer
+      # ---------------------------
+      - name: Run Bronze SQL
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U postgres -d IEC2029_Database -f scripts/transform_bronze.sql
+
+      # ---------------------------
+      # Run Silver Layer
+      # ---------------------------
+      - name: Run Silver SQL
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U postgres -d IEC2029_Database -f scripts/transform_silver.sql
+
+      # ---------------------------
+      # Run Gold Layer
+      # ---------------------------
+      - name: Run Gold SQL
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U postgres -d IEC2029_Database -f scripts/transform_gold.sql
+
+      # ---------------------------
+      # Set up Python (for tests)
+      # ---------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ---------------------------
+      # Run tests AFTER ETL
+      # ---------------------------
+      - name: Run tests with coverage
+        env:
+          DB_NAME: IEC2029_Database
+          DB_USER: postgres
+          DB_PASSWORD: password
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: |
+          pytest tests/ -v \
+            --cov=. \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=50

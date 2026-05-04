@@ -8,3 +8,6 @@ aiohttp
 ipython-sql
 openpyxl
 python-dotenv
+pytest
+papermill
+pytest-cov
