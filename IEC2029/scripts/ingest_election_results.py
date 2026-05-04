@@ -41,12 +41,12 @@ with engine.begin() as connection:
 
     #loop all csv files in the Election Results folder
     for file in csv_files:
-        df = pd.read_csv(file, encoding='latin1', low_memory=False, on_bad_lines='skip')
+        df = pd.read_csv(file, encoding='utf-8-sig', low_memory=False, on_bad_lines='skip')
         
         #standard naming conventions
         table_name = os.path.basename(file).replace('.csv', '').lower()
         table_name = table_name.replace(' ', '_').replace('(', '').replace(')', '').replace('-', '_')
 
-        df.to_sql(table_name, con=connection, schema='bronze', if_exists='replace', index=False)
+        df.to_sql(table_name, con=connection, schema='bronze', if_exists='replace', index=False, chunksize=10000, method='multi')
         
         print(f"{table_name} loaded successfully!")
